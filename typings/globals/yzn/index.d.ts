@@ -52,7 +52,8 @@ interface IDic {
 interface IRet {
     code:number,
     msg:string,
-    bizResponse:string
+    bizResponse:string,
+    errorMessage:string
 }
 
 interface JQuery {

@@ -11,21 +11,58 @@ $(document).ready(function(){
         bindTableField(res,'money');
         bindTableField(res,'withhold');
         bindTableField(res,'other');
+        //LastBasicMoneyRow
+        var rate:any[]=res.rate;
+        if (rate && rate.length>0) {
+            $.each(res.rate,function(i:number,e){
+                var sFeeType=(e.FeeType==1820001?'%':'元');
+                var sFeeName= findDicName(e.FeeID); // dic.FindFirst("DicCode","=", e.FeeID).DicName;
+                var sFeeOrRate=e.FeeOrRate;
+                var iRow=(i%2==0?1:2);
+                var html=`
+                <tr class="tabtdbg${iRow}">
+                        <td width="20%" class="textR">${sFeeName}
+                        </td>
+                        <td width="30%" class="textL">
+                            <span>${sFeeOrRate}</span>%
+                        </td>
+                         <td width="20%" class="textR"></td>
+                        <td width="30%" class="textL"></td>
+                    </tr>
+                `;
+                $('#LastBasicMoneyRow').after(html);
+            });
+        }
+        
         var $divApply=$('#applydiv');
+
+        function findDicName(i:number){
+            try {
+              return   dic.FindFirst("DicCode","=", i).DicName;
+            } catch {
+                return  "";
+            }
+        }
         $('#btn-submit').click(function(){
             if (checkupdateEx($divApply)){
-                $('#all').noasLoading();
-                $.post(ajaxUrl, {
+                var postData= {
                     method:'SaveApply',
+                    IouNo:iou,
                     ApplyDate:$('input[name=ApplyDate]',$divApply).val(),
-                    ApplyMoney:$('input[name=ApplyMoney]',$divApply).val(),
+                    ApplyMoney: $('#ApplyMoney',$divApply).val(),
                     ApplyText:$('textarea[name=ApplyText]',$divApply).val()
-                },function(res:IRet){
+                };
+                if (postData.ApplyDate==""){
+                    alert("申请提前还款日期 未填写!");
+                    return;
+                }
+                $('#all').noasLoading();
+                $.post(ajaxUrl,postData,function(res:IRet){
                     $('#all').noasLoading({show:false});
                     if (res.code==200){
                         alert("申请成功!");
                     } else {
-                        alert(res.bizResponse);
+                        alert(res.errorMessage);
                     }
                 });
             }
@@ -33,7 +70,7 @@ $(document).ready(function(){
     });
 
     
-
+    ///根据html标签属性 绑定数据显示
     function bindTableField(res:any,table:string){
         $('span[bindtable=' + table +']').each(function(i,e){
             var $e=$(e);
@@ -49,7 +86,7 @@ $(document).ready(function(){
                     }
                 }
             } catch(ex){
-                console.error(ex);
+                console.log(ex);
             }
         });
     }
