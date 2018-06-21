@@ -4,10 +4,10 @@ declare var g:{
 };
 
 interface Array<T> {
-    OrderByDesc(propertyname:string):T[];
-    Where(poperty:string,op:string,v:T):T[];
-    FindFirst(poperty:string,op:string,v:T):T[];
-    delItem(poperty:string,v:T):T[];
+    OrderByDesc(propertyname:keyof T):T[];
+    Where(poperty:keyof T,op:string,v:number|string):T[];
+    FindFirst(prop: keyof T,op:string,v:number|string):T;
+    delItem(poperty: keyof T,v:number|string):T[];
 }
 
 declare var WdatePicker:(opt:{
@@ -40,6 +40,20 @@ declare var checkidNumber:(obj:JQuery|HTMLElement)=>boolean;
 declare var checkEmail:(obj:JQuery|HTMLElement)=>boolean;
 declare var checkupdateEx:(obj:JQuery)=>boolean;
 
+interface IDic {
+    DicCode:number,
+    DicName:string,
+    DicIndex:number,
+    SubTypeCode:number,
+    SubTypeName:string,
+    BaseTypeCode:number,
+    BaseTypeName:string
+}
+interface IRet {
+    code:number,
+    msg:string,
+    bizResponse:string
+}
 
 interface JQuery {
     noasLoading(opt?:{show:boolean}):void;

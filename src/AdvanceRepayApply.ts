@@ -1,6 +1,34 @@
-var ajaxUrl="";
+var ajaxUrl="/Modules/Workflows/RepayMent/Ajax/AdvanceRepayApply.ashx";
+var iou=FK.QueryString("iou");
+var dic:IDic[];
 $(document).ready(function(){
-    
+    $('#all').noasLoading();
+    $.post(ajaxUrl,{method:"Load",iou:iou},function(res){
+        $('#all').noasLoading({show:false});
+        dic=res.dic;
+        bindTableField(res,'iou');
+        bindTableField(res,'loan');
+        bindTableField(res,'money');
+        bindTableField(res,'other');
+    });
+
+    function bindTableField(res:any,table:string){
+        $('span[bindtable=' + table +']').each(function(i,e){
+            var $e=$(e);
+            if ($e.attr('binddic')){
+                try {
+                    $e.text(dic.FindFirst("DicCode","=", res[table][e.id]).DicName)
+                } catch{}
+            } else {
+                if ($e.hasClass("wy")){ //万元
+                    var n=res[table][e.id]/10000.0;
+                    $e.text(n);
+                } else {
+                    $e.text(res[table][e.id]);
+                }
+            }
+        });
+    }
 });
 
 
