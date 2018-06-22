@@ -14,35 +14,32 @@ $(document).ready(function(){
         //LastBasicMoneyRow
         var rate:any[]=res.rate;
         if (rate && rate.length>0) {
-            $.each(res.rate,function(i:number,e){
-                var sFeeType=(e.FeeType==1820001?'%':'元');
-                var sFeeName= findDicName(e.FeeID); // dic.FindFirst("DicCode","=", e.FeeID).DicName;
-                var sFeeOrRate=e.FeeOrRate;
+
+            var twoArray= splitArrayToTwo(rate);
+            for(let i=0; i<twoArray.a.length; i++){
                 var iRow=(i%2==0?1:2);
+                var e1=ToRateViewModel(twoArray.a[i]);
+                var e2=ToRateViewModel(twoArray.b[i]);
                 var html=`
                 <tr class="tabtdbg${iRow}">
-                        <td width="20%" class="textR">${sFeeName}
+                        <td width="20%" class="textR">${e1.sFeeName}
                         </td>
                         <td width="30%" class="textL">
-                            <span>${sFeeOrRate}</span>%
+                            <span>${e1.sFeeOrRate}</span>${e1.sFeeType}
                         </td>
-                         <td width="20%" class="textR"></td>
-                        <td width="30%" class="textL"></td>
+                         <td width="20%" class="textR">${e2.sFeeName}</td>
+                        <td width="30%" class="textL">
+                            <span>${e2.sFeeOrRate}</span>${e2.sFeeType}
+                        </td>
                     </tr>
                 `;
                 $('#LastBasicMoneyRow').after(html);
-            });
+            } 
         }
         
         var $divApply=$('#applydiv');
 
-        function findDicName(i:number){
-            try {
-              return   dic.FindFirst("DicCode","=", i).DicName;
-            } catch {
-                return  "";
-            }
-        }
+      
         $('#btn-submit').click(function(){
             if (checkupdateEx($divApply)){
                 var postData= {
@@ -89,6 +86,47 @@ $(document).ready(function(){
                 console.log(ex);
             }
         });
+    }
+    interface ITwoArray {
+        a: any[],
+        b: any[]
+    }
+    function splitArrayToTwo(a:any[]){
+        var ret:ITwoArray = {a:[], b:[]};
+        for(let i=0; i<a.length; i++){
+            if (i % 2 == 0){
+                ret.a.push(a[i]);
+            } else {
+                ret.b.push(a[i]);
+            }
+        }
+        if (a.length % 2 !== 0){
+            ret.b.push(null);
+        }
+        return ret;
+    }
+
+    interface IRateViewModel {
+        sFeeType:string,
+        sFeeName:string,
+        sFeeOrRate:string
+    }
+
+    function ToRateViewModel(e:any):IRateViewModel{
+        var ret:IRateViewModel={ sFeeName:'',sFeeType:'',sFeeOrRate:''};
+        if (e){
+            ret.sFeeType= (e.FeeType==1820001?'%':'元');
+            ret.sFeeName= findDicName(e.FeeID); // dic.FindFirst("DicCode","=", e.FeeID).DicName;
+            ret.sFeeOrRate=e.FeeOrRate;
+        }
+        return ret;
+    }
+    function findDicName(i:number){
+        try {
+          return   dic.FindFirst("DicCode","=", i).DicName;
+        } catch {
+            return  "";
+        }
     }
 });
 
