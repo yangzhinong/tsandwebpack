@@ -69,7 +69,7 @@ $(document).ready(function(){
             postData=$.extend(postData, GetFlowParamFromUrl());
             $.post(ajaxUrl,postData,function(res:IRet){
                 if (res.code==200){
-                    alert("审核成功!");
+                    alert("操作成功!");
                 } else {
                     alert(res.errorMessage);
                 }

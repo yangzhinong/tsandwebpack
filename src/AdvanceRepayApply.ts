@@ -48,11 +48,13 @@ $(document).ready(function(){
             alwaysShowHeader:true,
             mergeSort:false,
             width:'100%'
-        })
-        
-        var $divApply=$('#applydiv');
+        });
 
-      
+        $('input[name=ApplyDate]').val(res.advance.ApplyDate);
+        $('#ApplyMoney').val(res.advance.ApplyMoney);
+        $('#ApplyText').val(res.advance.ApplyText);
+ 
+        var $divApply=$('#applydiv');
         $('#btn-submit').click(function(){
             if (checkupdateEx($divApply)){
                 var postData= {
