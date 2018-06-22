@@ -8,6 +8,7 @@ interface Array<T> {
     Where(poperty:keyof T,op:string,v:number|string):T[];
     FindFirst(prop: keyof T,op:string,v:number|string):T;
     delItem(poperty: keyof T,v:number|string):T[];
+    splitArrayToTwo():{a:any[],b:any[]}; //把数组一分为二
 }
 
 declare var WdatePicker:(opt:{
@@ -39,6 +40,9 @@ declare var checkTelOrPhone:(obj:JQuery|HTMLElement)=>boolean;
 declare var checkidNumber:(obj:JQuery|HTMLElement)=>boolean;
 declare var checkEmail:(obj:JQuery|HTMLElement)=>boolean;
 declare var checkupdateEx:(obj:JQuery)=>boolean;
+declare var template:(id:string,obj:object)=>string;
+
+
 
 interface IDic {
     DicCode:number,
@@ -66,7 +70,7 @@ interface JQuery {
             width?:number,
             align?:'center'|'left'|'right',
             render?: (item:object)=>JQuery|string
-        },
+        }[],
         width?:string,//'100%'
         alwaysShowHeader?:boolean,
         mergeSort?:boolean
@@ -81,5 +85,20 @@ interface JQuery {
     }):void;
 
 }
+
+declare namespace BPMSView
+{
+    interface IRepayMent_RateViewModel {
+        sFeeType:string,
+        sFeeName:string,
+        sFeeOrRate:string
+    }
+}
+
+
+
+
+//end region
+
 
 

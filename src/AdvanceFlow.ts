@@ -1,11 +1,10 @@
-//提前还款申请
+//提前还款审批
 var ajaxUrl="/Modules/Workflows/RepayMent/Ajax/AdvanceRepayApply.ashx";
-var iou=FK.QueryString("iou");
 var dic:IDic[];
 $(document).ready(function(){
-    $('#all').noasLoading();
     var flowParam=GetFlowParamFromUrl();
-    var postData= $.extend({method:"Load",iou:iou}, flowParam);
+    $('#all').noasLoading();
+    var postData= $.extend({method:"FlowLoad"}, flowParam);
     $.post(ajaxUrl,postData,function(res){
         $('#all').noasLoading({show:false});
         dic=res.dic;
@@ -14,6 +13,7 @@ $(document).ready(function(){
         bindTableField(res,'money');
         bindTableField(res,'withhold');
         bindTableField(res,'other');
+        bindTableField(res,'advance');
         //LastBasicMoneyRow
         var rate:any[]=res.rate;
         if (rate && rate.length>0) {
@@ -48,41 +48,36 @@ $(document).ready(function(){
             alwaysShowHeader:true,
             mergeSort:false,
             width:'100%'
-        })
-        
-        var $divApply=$('#applydiv');
-
-      
-        $('#btn-submit').click(function(){
-            if (checkupdateEx($divApply)){
-                var postData= {
-                    method:'SaveApply',
-                    AdvanceCount:FK.QueryString("AdvanceCount"),
-                    IouNo:iou,
-                    ApplyDate:$('input[name=ApplyDate]',$divApply).val(),
-                    ApplyMoney: $('#ApplyMoney',$divApply).val(),
-                    ApplyText:$('textarea[name=ApplyText]',$divApply).val()
-                };
-                if (postData.ApplyDate==""){
-                    alert("申请提前还款日期 未填写!");
-                    return;
-                }
-                var flowParam=GetFlowParamFromUrl();
-                postData= $.extend(postData, flowParam);
-                $('#all').noasLoading();
-                $.post(ajaxUrl,postData,function(res:IRet){
+        });
+        //审核按钮
+        $('#btnNoPass, #btnPass').click(function(){
+            $('#all').noasLoading();
+            var v=$(this).attr("v");
+            var txt=$('#txtAuditText').val();
+            if (v=="0"){ //不通过
+                if (txt == ''){
+                    alert("必须填写不通过的原因!");
                     $('#all').noasLoading({show:false});
-                    if (res.code==200){
-                        alert("申请成功!");
-                    } else {
-                        alert(res.errorMessage);
-                    }
-                });
+                    return ;
+                }
             }
+            var postData={
+                method:'FlowSaved',
+                passed:v,
+                txt:txt
+            };
+            postData=$.extend(postData, GetFlowParamFromUrl());
+            $.post(ajaxUrl,postData,function(res:IRet){
+                if (res.code==200){
+                    alert("审核成功!");
+                } else {
+                    alert(res.errorMessage);
+                }
+                $('#all').noasLoading({show:false});
+            })
+
         });
     });
-
-    
     ///根据html标签属性 绑定数据显示
     function bindTableField(res:any,table:string){
         $('span[bindtable=' + table +']').each(function(i,e){
@@ -103,6 +98,17 @@ $(document).ready(function(){
             }
         });
     }
+   
+    //从url中获取流程信息
+    function GetFlowParamFromUrl(){
+        return {
+            insId: FK.QueryString("i"),
+            nodeId: FK.QueryString("n"),
+            taskId: FK.QueryString("t")
+        };
+    }
+    
+
     function ToRateViewModel(e:any):BPMSView.IRepayMent_RateViewModel{
         var ret:BPMSView.IRepayMent_RateViewModel={ sFeeName:'',sFeeType:'',sFeeOrRate:''};
         if (e){
@@ -118,15 +124,6 @@ $(document).ready(function(){
         } catch {
             return  "";
         }
-    }
-
-    //从url中获取流程信息
-    function GetFlowParamFromUrl(){
-        return {
-            insId: FK.QueryString("i"),
-            nodeId: FK.QueryString("n"),
-            taskId: FK.QueryString("t")
-        };
     }
 });
 
