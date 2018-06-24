@@ -59,6 +59,13 @@ interface IRet {
     bizResponse:string,
     errorMessage:string
 }
+interface JQueryStatic {
+    templates:(tpl:string)=>IJsRender
+}
+
+interface IJsRender{
+    render(data: any): string;
+}
 
 interface JQuery {
     noasLoading(opt?:{show:boolean}):void;
@@ -83,6 +90,9 @@ interface JQuery {
         recordCount:number,
         showNum:number
     }):void;
+
+    render(): string;   //jsrender
+    render(data: any): string;
 
 }
 
