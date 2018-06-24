@@ -2,6 +2,7 @@ declare var g:{
     fileServerPostUrl:string;
     fileServerGetUrl:string;
 };
+declare function require(name: string): string;
 
 interface Array<T> {
     OrderByDesc(propertyname:keyof T):T[];

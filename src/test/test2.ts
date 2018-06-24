@@ -1,5 +1,5 @@
 import {Hello} from './lib'
-
+const css = require('../css/1.scss');
 Hello();
 
 import {tplSelectOption} from '../template/t.html';
